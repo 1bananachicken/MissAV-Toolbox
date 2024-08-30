@@ -6,19 +6,7 @@ import os
 import enum
 from missav_utils.base_downloader import BaseDownloader
 from PIL import Image, ImageFont, ImageDraw
-
-
-class MovieType(enum.Enum):
-    professional = 0
-    fc2 = 1
-
-
-class SortBy(enum.Enum):
-    ReleaseDate = 0
-    RecentUpdate = 1
-    TodayViews = 2
-    WeeklyViews = 3
-    MonthlyViews = 4
+from missav_utils.type_enum import MovieType, SortBy
 
 
 class CoverDownloader(BaseDownloader):

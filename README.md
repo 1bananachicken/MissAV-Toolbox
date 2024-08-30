@@ -13,6 +13,7 @@ pip install missav_utils-0.1-py3-none-any.whl
 或者添加以下内容
 ```python
 import os
+
 os.environ['http_proxy'] = 'http://127.0.0.1:7890'
 os.environ['https_proxy'] = 'http://127.0.0.1:7890'
 ```
@@ -25,7 +26,29 @@ downloader = CoverDownloader()
 downloader.download()
 ```
 
+#### 初始化参数
+movie_type: enum
+```
+MovieType.professional  # 有码
+MovieType.fc2           # FC2
+```
+sort_by: enum
+```
+SortBy.ReleaseDate      # 发行日期
+SortBy.RecentUpdate     # 最近更新
+SortBy.TodayViews       # 今日观看
+SortBy.WeeklyViews      # 本周观看
+SortBy.MonthlyViews     # 本月观看
+```
 
+#### 示例
+下载今日观看前十的有码电影封面
+```python
+from missav_utils.MissavCovers import CoverDownloader, MovieType, SortBy
+
+downloader = CoverDownloader(movie_type=MovieType.professional, sort_by=SortBy.TodayViews)
+downloader.download()
+```
 ### 效果
 <details>
 <summary>⚠️⚠️⚠️NSFW警告！！！⚠️⚠️⚠️</summary>
