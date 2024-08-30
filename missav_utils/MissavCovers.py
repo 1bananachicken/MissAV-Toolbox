@@ -55,10 +55,11 @@ class CoverDownloader(BaseDownloader):
         return self.__get_page_parser(page).find_all('a', class_='text-secondary group-hover:text-primary')
 
     def download_cover(self, movie_title, movie_id):
-        # fix the bug that the movie title contains '/?*'
+        # fix the bug that the movie title contains '/?*\'
         movie_title = movie_title.replace('/', '')
         movie_title = movie_title.replace('*', '')
         movie_title = movie_title.replace('?', '')
+        movie_title = movie_title.replace('\\', '')
 
         cover_save_path = os.path.join(self.save_path, f'{movie_title}.jpg')
         if os.path.exists(cover_save_path):
