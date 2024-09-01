@@ -14,34 +14,44 @@ class CoverDownloader(BaseDownloader):
     Download movie covers from missav.com and make a collage
 
     :param save_path: str, the path to save the covers
-    :param movie_type: professional, fc2
+    :param movie_type: professional, fc2, search
     :param sort_by: ReleaseDate, RecentUpdate, TodayViews, WeeklyViews, MonthlyViews
     """
-    def __init__(self, save_path='covers', movie_type=MovieType.professional, sort_by=SortBy.ReleaseDate):
+
+    def __init__(self, save_path='covers', movie_type=MovieType.professional, sort_by=SortBy.ReleaseDate,
+                 keywords=None):
         super().__init__(save_path)
 
         self.movie_type = movie_type
         self.sort_by = sort_by
 
+        self.keywords = self.__parse_keywords(keywords)
+
         self.prefix = 'https://missav.com/dm506/cn/'
-        self.types = ['release?', 'fc2?']
+        self.types = ['release', 'fc2', 'search/']
         self.suffix = '&page='
-        self.all_sort_by = ['sort=released_at', 'sort=published_at', 'sort=today_views', 'sort=weekly_views',
-                            'sort=monthly_views']
+        self.all_sort_by = ['?sort=released_at', '?sort=published_at', '?sort=today_views', '?sort=weekly_views',
+                            '?sort=monthly_views']
 
         self.scraper = cloudscraper.create_scraper(delay=5, browser={'browser': 'chrome',
-                                                                     'platform': 'linux',
+                                                                     'platform': 'windows',
                                                                      'mobile': False})
+
+        self.headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            'headerser': 'https://google.com'}
+
         self.count = 0
         self.top_covers = {}
         self.top_ids = {}
 
     def __get_page_parser(self, page=1):
         try:
-            link = f'{self.prefix}{self.types[self.movie_type.value]}{self.all_sort_by[self.sort_by.value]}'
+            link = f'{self.prefix}{self.types[self.movie_type.value]}{self.keywords}{self.all_sort_by[self.sort_by.value]}'
             if page != 1:
                 link += f'{self.suffix}{page}'
-            content = self.scraper.get(link, proxies=self.proxy)
+            content = self.scraper.get(link, proxies=self.proxy, headers=self.headers)
             content.raise_for_status()
         except requests.exceptions.HTTPError:
             raise requests.HTTPError('Can\'t fetch the content')
@@ -74,14 +84,14 @@ class CoverDownloader(BaseDownloader):
 
         try:
             movie_cover_link = f'https://fivetiu.com/{movie_id}/cover-n.jpg'
-            cover = self.scraper.get(movie_cover_link, proxies=self.proxy)
+            cover = self.scraper.get(movie_cover_link, proxies=self.proxy, headers=self.headers)
             cover.raise_for_status()
             with open(cover_save_path, 'wb') as f:
                 f.write(cover.content)
         except requests.exceptions.HTTPError:
             # try to download low resolution cover
             movie_cover_link = f'https://fivetiu.com/{movie_id}/cover-t.jpg'
-            cover = self.scraper.get(movie_cover_link, proxies=self.proxy)
+            cover = self.scraper.get(movie_cover_link, proxies=self.proxy, headers=self.headers)
             with open(cover_save_path, 'wb') as f:
                 f.write(cover.content)
 
@@ -126,6 +136,19 @@ class CoverDownloader(BaseDownloader):
                 background.paste(title, ((background_width - title_width) // 2, 0), title)
 
         background.save(f'{self.movie_type.name}-{self.sort_by.name}-Top10.png')
+
+    def __parse_keywords(self, keywords):
+        if self.movie_type == MovieType.search:
+            if keywords is None:
+                raise ValueError('Keywords should be provided for search type')
+            elif isinstance(keywords, str):
+                return keywords
+            elif isinstance(keywords, list):
+                return '+'.join(keywords)
+            else:
+                raise ValueError('Keywords should be a string or a list of strings')
+        else:
+            return ''
 
     def download(self):
         self.save_path = os.path.join(self.base_save_path, self.sort_by.name)

@@ -4,6 +4,7 @@ from enum import Enum
 class MovieType(Enum):
     professional = 0
     fc2 = 1
+    search = 2
 
 
 class SortBy(Enum):
