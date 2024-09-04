@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='missav_toolbox',
-    version='1.0.0',
+    version='1.1.0',
     url='https://github.com/1bananachicken/MissAV-Toolbox',
     packages=find_packages(),
     install_requires=[
