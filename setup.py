@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='missav_toolbox',
-    version='0.2.1',
+    version='1.0.0',
+    url='https://github.com/1bananachicken/MissAV-Toolbox',
     packages=find_packages(),
     install_requires=[
         'requests',
@@ -17,7 +18,7 @@ setup(
     author='bananachicken',
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache-2.0 License',
         'Operating System :: OS Independent',
     ],
 )
