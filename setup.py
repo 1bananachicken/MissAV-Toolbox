@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
     name='missav_toolbox',
     version='1.0.0',
@@ -14,6 +17,7 @@ setup(
         'natsort',
         'ffmpeg-python',
     ],
+    long_description=long_description,
     include_package_data=True,
     author='bananachicken',
     classifiers=[
