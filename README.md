@@ -1,8 +1,8 @@
 # MissAV封面下载器
 ### 安装
-在Release中下载`missav_utils-0.2-py3-none-any.whl`文件，然后在命令行中执行以下命令：
+在Release中下载`missav_toolbox-0.2-py3-none-any.whl`文件，然后在命令行中执行以下命令：
 ```shell
-pip install missav_utils-0.2-py3-none-any.whl
+pip install missav_toolbox-0.2-py3-none-any.whl
 ```
 
 ### 使用
@@ -19,8 +19,9 @@ os.environ['https_proxy'] = 'http://127.0.0.1:7890'
 ```
 
 #### 基础用法
+
 ```python
-from missav_utils.MissavCovers import CoverDownloader
+from missav_toolbox.missav_cover import CoverDownloader
 
 downloader = CoverDownloader()
 downloader.download()
@@ -43,8 +44,9 @@ SortBy.MonthlyViews     # 本月观看
 
 #### 示例
 下载今日观看前十的有码电影封面
+
 ```python
-from missav_utils.MissavCovers import CoverDownloader, MovieType, SortBy
+from missav_toolbox.missav_cover import CoverDownloader, MovieType, SortBy
 
 downloader = CoverDownloader(movie_type=MovieType.professional, sort_by=SortBy.TodayViews)
 downloader.download()
