@@ -1,4 +1,4 @@
-# MissAV封面下载器
+# MissAV工具箱
 ### 安装
 ```shell
 pip install missav_toolbox
