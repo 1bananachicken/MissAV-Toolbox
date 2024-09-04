@@ -9,18 +9,15 @@ from missav_toolbox.base_downloader import BaseDownloader
 
 
 class VideoDownloader(BaseDownloader):
-    def __init__(self, save_path='videos', movie_type=MovieType.professional, sort_by=SortBy.ReleaseDate, keywords=None):
+    def __init__(self, save_path='videos', movie_type=MovieType.professional, sort_by=SortBy.ReleaseDate,
+                 keywords=None):
         super().__init__(save_path, movie_type, sort_by, keywords)
 
         self.video_id = None
 
     def download_segment(self, base_link, suffix, segment):
         video_link = base_link + '/' + suffix.split('/')[0] + '/' + segment
-        try:
-            video = self.scraper.get(video_link, proxies=self.proxy, headers=self.headers)
-            video.raise_for_status()
-        except requests.exceptions.HTTPError:
-            raise requests.HTTPError('Can\'t fetch the content')
+        video = self.get_scraper().get(video_link, proxies=self.proxy, headers=self.headers)
 
         segment = segment.replace('jpeg', 'ts')
         segment_save_path = os.path.join(self.save_path, segment)
@@ -38,11 +35,12 @@ class VideoDownloader(BaseDownloader):
 
         index_begin = js[2].text.find('m3u8')
         index_offset = 112
-        uuid = js[2].text[index_begin : index_begin+index_offset].split('|')
+        uuid = js[2].text[index_begin: index_begin + index_offset].split('|')
         base_link = 'https://surrit.com/' + '-'.join(uuid[i] for i in range(5, 0, -1))
 
         try:
-            m3u8_playlist_content = self.scraper.get(base_link + '/playlist.m3u8', proxies=self.proxy, headers=self.headers)
+            m3u8_playlist_content = self.scraper.get(base_link + '/playlist.m3u8', proxies=self.proxy,
+                                                     headers=self.headers)
             m3u8_playlist_content.raise_for_status()
         except requests.exceptions.HTTPError:
             raise requests.HTTPError('Can\'t fetch the content')
@@ -59,11 +57,14 @@ class VideoDownloader(BaseDownloader):
         m3u8_video = m3u8.loads(m3u8_video_content.text)
         segments = m3u8_video.segments.uri
 
-        pool = mp.Pool(8)
+        pool = mp.Pool(mp.cpu_count())
         for segment in segments:
             pool.apply_async(self.download_segment, args=(base_link, suffix, segment))
         pool.close()
         pool.join()
+
+        # for segment in segments:
+        #     self.download_segment(base_link, suffix, segment)
 
     def merge_video(self):
         video_output_path = os.path.join(self.save_path, f'{self.video_id}.mp4')
@@ -85,7 +86,7 @@ class VideoDownloader(BaseDownloader):
     def delete_cache(self):
         caches = os.listdir(self.save_path)
         for cache in caches:
-            if not cache.endswith('.mp4'):
+            if cache.endswith('.ts') or cache.endswith('.txt'):
                 os.remove(os.path.join(self.save_path, cache))
 
     def download(self):

@@ -1,8 +1,7 @@
 # MissAV封面下载器
 ### 安装
-在Release中下载`missav_toolbox-0.2-py3-none-any.whl`文件，然后在命令行中执行以下命令：
 ```shell
-pip install missav_toolbox-0.2-py3-none-any.whl
+pip install missav_toolbox
 ```
 
 ### 使用
@@ -19,7 +18,7 @@ os.environ['https_proxy'] = 'http://127.0.0.1:7890'
 ```
 
 #### 基础用法
-
+下载封面
 ```python
 from missav_toolbox.missav_cover import CoverDownloader
 
@@ -27,6 +26,17 @@ downloader = CoverDownloader()
 downloader.download()
 ```
 
+下载视频
+```python
+from missav_toolbox.missav_video import VideoDownloader
+
+def main(): # 由于视频下载器使用多进程，需要在main函数下执行
+    downloader = VideoDownloader(keywords='车牌号')
+    downloader.download()
+
+if __name__ == '__main__':
+    main()
+```
 #### 初始化参数
 movie_type: enum
 ```

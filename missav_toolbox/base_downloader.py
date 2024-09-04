@@ -6,7 +6,7 @@ from missav_toolbox.type_enum import MovieType, SortBy
 
 
 class BaseDownloader:
-    def __init__(self, save_path : str, movie_type=MovieType.professional, sort_by=SortBy.ReleaseDate,
+    def __init__(self, save_path: str, movie_type=MovieType.professional, sort_by=SortBy.ReleaseDate,
                  keywords=None):
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -32,14 +32,19 @@ class BaseDownloader:
 
         self.link = f'{self.prefix}{self.types[self.movie_type.value]}{self.keywords}{self.all_sort_by[self.sort_by.value]}'
 
-        self.scraper = cloudscraper.create_scraper(delay=5, browser={'browser': 'chrome',
-                                                                     'platform': 'windows',
-                                                                     'mobile': False})
+        self.scraper = self.get_scraper()
 
         self.headers = {
             "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/91.0.4472.124 Safari/537.36",
             'headerser': 'https://google.com'}
+
+    @staticmethod
+    def get_scraper():
+        return cloudscraper.create_scraper(delay=5, browser={'browser': 'chrome',
+                                                             'platform': 'windows',
+                                                             'mobile': False})
 
     def get_page_parser(self, link, page=None):
         try:
@@ -54,7 +59,8 @@ class BaseDownloader:
 
     def get_num_pages(self):
         try:
-            num_pages = int(self.get_page_parser(self.link, 1).find_all('a', class_='relative')[-2].contents[0].split('\n')[1])
+            num_pages = int(
+                self.get_page_parser(self.link, 1).find_all('a', class_='relative')[-2].contents[0].split('\n')[1])
         except IndexError:
             num_pages = 1
 
@@ -79,4 +85,3 @@ class BaseDownloader:
 
     def download(self):
         pass
-
